@@ -1,0 +1,105 @@
+SQL Codes for dlhstuckshop app
+
+CREATE DATABASE `dlhs_tuck` !40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci 
+
+
+
+1**order_items**
+
+CREATE TABLE `order_items` (
+  `order_item_id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `quantity_ordered` int(11) NOT NULL,
+  `price` decimal(10,0) NOT NULL,
+  PRIMARY KEY (`order_item_id`),
+  KEY `order_id` (`order_id`),
+  KEY `product_id` (`product_id`),
+  CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `user_orders` (`order_id`),
+  CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `items` (`product_id`)
+)
+
+
+2**student_data**
+
+CREATE TABLE `student_data` (
+  `id` int(255) NOT NULL AUTO_INCREMENT,
+  `fname` text NOT NULL,
+  `lname` text NOT NULL,
+  `uname` text NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `phonenum` varchar(255) NOT NULL,
+  `current_class` text NOT NULL,
+  `campus` text NOT NULL,
+  `status` text NOT NULL DEFAULT 'inactive',
+  `dp` longblob NOT NULL,
+  `datejoined` date NOT NULL DEFAULT current_timestamp(),
+  `timejoined` time(6) NOT NULL DEFAULT current_timestamp(),
+  `is_deleted` text NOT NULL DEFAULT 'false',
+  PRIMARY KEY (`id`)
+) 
+
+3**user_orders**
+
+CREATE TABLE `user_orders` (
+  `order_id` int(255) NOT NULL AUTO_INCREMENT,
+  `user_id` int(255) NOT NULL,
+  `amount_spent` decimal(10,0) NOT NULL,
+  `order_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `status` enum('Pending','Completed','Cancelled') DEFAULT 'Pending',
+  PRIMARY KEY (`order_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `user_orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `student_data` (`id`)
+)
+
+4**items**
+
+CREATE TABLE `items` (
+  `product_id` int(255) NOT NULL AUTO_INCREMENT,
+  `product_category` varchar(255) NOT NULL,
+  `product_name` text NOT NULL,
+  `product_price` varchar(255) NOT NULL,
+  `product_quantity` int(255) NOT NULL DEFAULT 0,
+  `product_picture` longblob NOT NULL,
+  `product_added` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`product_id`)
+)
+
+5**transaction_history**
+
+CREATE TABLE `transaction_history` (
+  `transaction_id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_id` int(11) NOT NULL,
+  `payment_status` enum('Pending','Completed','Failed') DEFAULT 'Pending',
+  `transaction_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`transaction_id`),
+  KEY `order_id` (`order_id`),
+  CONSTRAINT `transaction_history_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `user_orders` (`order_id`)
+)
+
+
+6**account_balance**
+
+CREATE TABLE `account_balance` (
+  `user_id` int(11) NOT NULL,
+  `balance` int(11) NOT NULL,
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `account_balance_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `student_data` (`id`)
+)
+
+7**admin**
+
+CREATE TABLE `admin` (
+  `id` int(255) NOT NULL AUTO_INCREMENT,
+  `fname` text NOT NULL,
+  `lname` text NOT NULL,
+  `uname` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `phonenum` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `position_in_school` varchar(255) NOT NULL,
+  `campus` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
